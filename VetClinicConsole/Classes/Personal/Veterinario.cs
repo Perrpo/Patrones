@@ -1,6 +1,7 @@
 namespace VetClinicConsole.Classes.Personal;
 
 using VetClinicConsole.Classes.Agendas;
+using VetClinicConsole.Classes.Servicios;
 using VetClinicConsole.Interfaces;
 
 public class Veterinario : Empleado, IAgendable
@@ -19,4 +20,8 @@ public class Veterinario : Empleado, IAgendable
 
     public List<HorarioDisponible> VerDisponibilidad(DateTime fecha, TimeSpan duracion) =>
         _agenda.ObtenerDisponibilidad(fecha, duracion);
+
+    public bool PuedeRealizar(IServicio servicio) =>
+        servicio is Consulta or Vacunacion or CirugiaMenor or Radiografia
+        or AnalisisSangre or LimpiezaDental or Urgencia;
 }

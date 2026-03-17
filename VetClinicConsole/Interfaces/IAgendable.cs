@@ -6,4 +6,5 @@ public interface IAgendable
 {
     Agenda ObtenerAgenda();
     List<HorarioDisponible> VerDisponibilidad(DateTime fecha, TimeSpan duracion);
+    bool PuedeRealizar(IServicio servicio);
 }

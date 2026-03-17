@@ -1,6 +1,7 @@
 namespace VetClinicConsole.Classes.Personal;
 
 using VetClinicConsole.Classes.Agendas;
+using VetClinicConsole.Classes.Servicios;
 using VetClinicConsole.Interfaces;
 
 public class Peluquero : Empleado, IAgendable
@@ -17,4 +18,7 @@ public class Peluquero : Empleado, IAgendable
 
     public List<HorarioDisponible> VerDisponibilidad(DateTime fecha, TimeSpan duracion) =>
         _agenda.ObtenerDisponibilidad(fecha, duracion);
+
+    public bool PuedeRealizar(IServicio servicio) =>
+        servicio is Peluqueria;
 }

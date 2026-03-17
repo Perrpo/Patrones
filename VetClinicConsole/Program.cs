@@ -217,10 +217,12 @@ Mascota? ElegirMascota()
 IAgendable? ElegirProfesional(IServicio servicio)
 {
     Console.WriteLine("Elige profesional:");
-    var candidatos = data.Profesionales.Where(p => ProfesionalPuedeAtender(p, servicio)).ToList();
+    var candidatos = data.Profesionales
+        .Where(p => p.PuedeRealizar(servicio))
+        .ToList();
     if (!candidatos.Any())
     {
-        Console.WriteLine("No hay profesionales con la especialidad requerida.\n");
+        Console.WriteLine("No hay profesionales disponibles para este servicio.\n");
         return null;
     }
     return ElegirDeLista(candidatos, p => p switch
@@ -286,16 +288,4 @@ DateTime ReadDate(string prompt)
             return value;
         Console.WriteLine("Formato de fecha/hora inválido.");
     }
-}
-
-bool ProfesionalPuedeAtender(IAgendable profesional, IServicio servicio)
-{
-    return profesional switch
-    {
-        Veterinario v => v.Especialidad.ToLowerInvariant() == servicio.EspecialidadRequerida.ToLowerInvariant()
-                         || servicio.EspecialidadRequerida == "medicina_general",
-        Peluquero => servicio.EspecialidadRequerida == "peluqueria",
-        Asistente => servicio.EspecialidadRequerida == "recepcion",
-        _ => false
-    };
 }
