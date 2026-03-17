@@ -1,0 +1,15 @@
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\bin\Debug\net10.0\VetClinicConsole.exe
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\bin\Debug\net10.0\VetClinicConsole.deps.json
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\bin\Debug\net10.0\VetClinicConsole.runtimeconfig.json
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\bin\Debug\net10.0\VetClinicConsole.dll
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\bin\Debug\net10.0\VetClinicConsole.pdb
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\VetClinicConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\VetClinicConsole.AssemblyInfoInputs.cache
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\VetClinicConsole.AssemblyInfo.cs
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\VetClinicConsole.csproj.CoreCompileInputs.cache
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\VetClinicConsole.dll
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\refint\VetClinicConsole.dll
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\VetClinicConsole.pdb
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\VetClinicConsole.genruntimeconfig.cache
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\ref\VetClinicConsole.dll
+C:\Users\fresc\IdeaProjects\Veterinaria-Con-SOLID-Y-PATRONES\VetClinicConsole\obj\Debug\net10.0\VetClinicConsole.sourcelink.json
