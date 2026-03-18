@@ -10,14 +10,16 @@ var reporter = new DataReporter(data);
 
 while (true)
 {
-    Console.WriteLine("=== Veterinaria - Gestión de Citas ===");
+Console.WriteLine("=== Veterinaria - Gestión de Citas ===");
     Console.WriteLine("1) Listar todo");
     Console.WriteLine("2) Listar citas");
-    Console.WriteLine("3) Crear cita");
-    Console.WriteLine("4) Cambiar estado de una cita");
-    Console.WriteLine("5) Listar mascotas");
-    Console.WriteLine("6) Registrar pago");
-    Console.WriteLine("7) Buscar cita");
+    Console.WriteLine("3) Crear cliente");
+    Console.WriteLine("4) Crear mascota");
+    Console.WriteLine("5) Crear cita");
+    Console.WriteLine("6) Cambiar estado de una cita");
+    Console.WriteLine("7) Listar mascotas");
+    Console.WriteLine("8) Registrar pago");
+    Console.WriteLine("9) Buscar cita");
     Console.WriteLine("0) Salir");
     Console.Write("Selecciona opción: ");
 
@@ -35,18 +37,24 @@ while (true)
                 reporter.PrintCitas();
                 break;
             case "3":
-                CrearCita();
+                CrearCliente();
                 break;
             case "4":
-                CambiarEstadoCita();
+                CrearMascota();
                 break;
             case "5":
-                reporter.PrintMascotas();
+                CrearCita();
                 break;
             case "6":
-                RegistrarPago();
+                CambiarEstadoCita();
                 break;
             case "7":
+                reporter.PrintMascotas();
+                break;
+            case "8":
+                RegistrarPago();
+                break;
+            case "9":
                 BuscarCita();
                 break;
             case "0":
@@ -89,6 +97,70 @@ void CrearCita()
 
     var mensaje = data.Facade.AgendarCita(slot.Fecha + slot.HoraInicio, mascota!, profesional!, new[] { servicio! });
     Console.WriteLine($"{mensaje}\n");
+}
+
+void CrearCliente()
+{
+    Console.WriteLine("=== Crear Cliente ===");
+    Console.Write("Nombre completo: ");
+    var nombre = (Console.ReadLine() ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(nombre))
+    {
+        Console.WriteLine("Nombre obligatorio.\n");
+        return;
+    }
+
+    Console.Write("Email: ");
+    var email = (Console.ReadLine() ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(email))
+    {
+        Console.WriteLine("Email obligatorio.\n");
+        return;
+    }
+
+    var nuevoId = data.Clientes.Any() ? data.Clientes.Max(c => c.Id) + 1 : 1;
+    var cliente = new Cliente(nuevoId, nombre, email);
+    data.Clientes.Add(cliente);
+    Console.WriteLine($"Cliente {cliente.Id} creado.\n");
+}
+
+void CrearMascota()
+{
+    Console.WriteLine("=== Crear Mascota ===");
+    var cliente = ElegirCliente();
+    if (cliente is null) return;
+
+    Console.Write("Nombre de la mascota: ");
+    var nombre = (Console.ReadLine() ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(nombre))
+    {
+        Console.WriteLine("Nombre obligatorio.\n");
+        return;
+    }
+
+    Console.Write("Especie: ");
+    var especie = (Console.ReadLine() ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(especie))
+    {
+        Console.WriteLine("Especie obligatoria.\n");
+        return;
+    }
+
+    Console.Write("Raza: ");
+    var raza = (Console.ReadLine() ?? "").Trim();
+
+    Console.Write("Edad (años): ");
+    var edadTxt = (Console.ReadLine() ?? "").Trim();
+    if (!int.TryParse(edadTxt, out var edad) || edad < 0)
+    {
+        Console.WriteLine("Edad inválida.\n");
+        return;
+    }
+
+    var nuevoId = data.Mascotas.Any() ? data.Mascotas.Max(m => m.Id) + 1 : 1;
+    var mascota = new Mascota(nuevoId, nombre, especie, raza, edad, cliente);
+    data.Mascotas.Add(mascota);
+    Console.WriteLine($"Mascota {mascota.Id} creada para {cliente.Nombre}.\n");
 }
 
 void CambiarEstadoCita()
@@ -180,7 +252,11 @@ void BuscarCita()
     if (coincidencias.Count > 1)
     {
         Console.WriteLine("Se encontraron varias, elige una:");
-        var seleccion = ElegirDeLista(coincidencias, c => $"{c.Id} | {c.Mascota.Nombre} | {c.Horario.Fecha:yyyy-MM-dd} {c.Horario.HoraInicio} | {c.EstadoNombre}");
+        var seleccion = ElegirDeLista(coincidencias, c =>
+        {
+            var serviciosTxt = string.Join(", ", c.Factura.Servicios.Select(s => s.Nombre));
+            return $"{c.Id} | {c.Mascota.Nombre} | {c.Horario.Fecha:yyyy-MM-dd} {c.Horario.HoraInicio} | {c.EstadoNombre} | {serviciosTxt}";
+        });
         if (seleccion is null) return;
         ImprimirCitaDetallada(seleccion);
     }
@@ -199,10 +275,12 @@ void ImprimirCitaDetallada(Cita c)
         Asistente a => a.Nombre,
         _ => c.Profesional.GetType().Name
     };
+    var servicios = string.Join(", ", c.Factura.Servicios.Select(s => $"{s.Nombre} ({s.Duracion()} min)"));
     Console.WriteLine($"Cita {c.Id}");
     Console.WriteLine($"Mascota: {c.Mascota.Nombre}");
     Console.WriteLine($"Profesional: {profNombre}");
     Console.WriteLine($"Fecha: {c.Horario.Fecha:yyyy-MM-dd} {c.Horario.HoraInicio}");
+    Console.WriteLine($"Servicios: {servicios}");
     Console.WriteLine($"Estado: {c.EstadoNombre}");
     Console.WriteLine($"Total: ${c.Factura.CalcularTotal():N0}");
     Console.WriteLine();
@@ -240,6 +318,12 @@ VetClinicConsole.Interfaces.IServicio? ElegirServicio()
     return ElegirDeLista(data.Servicios, s => $"{s.Nombre} | ${s.CalcularPrecio():N0} | {s.Duracion()} min");
 }
 
+Cliente? ElegirCliente()
+{
+    Console.WriteLine("Elige cliente:");
+    return ElegirDeLista(data.Clientes, c => $"{c.Id}) {c.Nombre} | {c.Email}");
+}
+
 Cita? ElegirCita()
 {
     Console.WriteLine("Elige cita:");
@@ -252,7 +336,8 @@ Cita? ElegirCita()
             Asistente a => a.Nombre,
             _ => "Profesional"
         };
-        return $"{c.Id} | {c.Mascota.Nombre} | {prof} | {c.Horario.Fecha:yyyy-MM-dd} {c.Horario.HoraInicio} | {c.EstadoNombre}";
+        var serviciosTxt = string.Join(", ", c.Factura.Servicios.Select(s => s.Nombre));
+        return $"{c.Id} | {c.Mascota.Nombre} | {prof} | {c.Horario.Fecha:yyyy-MM-dd} {c.Horario.HoraInicio} | {c.EstadoNombre} | {serviciosTxt}";
     });
 }
 
@@ -284,8 +369,19 @@ DateTime ReadDate(string prompt)
     {
         Console.Write(prompt);
         var txt = Console.ReadLine();
-        if (DateTime.TryParse(txt, out var value))
-            return value;
-        Console.WriteLine("Formato de fecha/hora inválido.");
+        if (!DateTime.TryParse(txt, out var value))
+        {
+            Console.WriteLine("Formato de fecha/hora inválido.");
+            continue;
+        }
+
+        var soloFecha = value.Date;
+        if (soloFecha < DateTime.Today)
+        {
+            Console.WriteLine("La fecha no puede ser anterior a hoy.");
+            continue;
+        }
+
+        return soloFecha;
     }
 }
