@@ -21,29 +21,49 @@ public class InMemoryData
 
     public static InMemoryData Load()
     {
+        static void AgregarHorarioSemanal(IAgendable profesional, int baseId)
+        {
+            var horarios = Enumerable.Range(0, 7)
+                .Select(i => new HorarioLaboral(
+                    baseId + i,
+                    DateTime.Today.AddDays(i),
+                    TimeSpan.FromHours(8),
+                    TimeSpan.FromHours(18)));
+
+            profesional.ObtenerAgenda().AgregarHorariosLaborales(horarios);
+        }
+
         var clientes = new List<Cliente>
         {
-            new Cliente(1, "María González", "maria@example.com"),
-            new Cliente(2, "Carlos Rodríguez", "carlos@example.com"),
-            new Cliente(3, "Ana López", "ana@example.com")
+            new Cliente(1, "MarÃ­a GonzÃ¡lez", "maria@example.com"),
+            new Cliente(2, "Carlos RodrÃ­guez", "carlos@example.com"),
+            new Cliente(3, "Ana LÃ³pez", "ana@example.com")
         };
 
         var mascotas = new List<Mascota>
         {
             new Mascota(1, "Luna", "Perro", "Golden Retriever", 3, clientes[0]),
             new Mascota(2, "Miau", "Gato", "Persa", 2, clientes[0]),
-            new Mascota(3, "Max", "Perro", "Pastor Alemán", 5, clientes[1])
+            new Mascota(3, "Max", "Perro", "Pastor AlemÃ¡n", 5, clientes[1])
         };
 
-        var vet = new Veterinario(1, "Dra. Elena Martín", "elena@vet.com", "cirugia");
-        var vetGeneral = new Veterinario(2, "Dr. Mateo Gómez", "mateo@vet.com", "medicina_general");
-        var vetUrgencias = new Veterinario(3, "Dra. Sofía Ávila", "sofia@vet.com", "urgencias");
+        var vet = new Veterinario(1, "Dra. Elena MartÃ­n", "elena@vet.com", "cirugia");
+        var vetGeneral = new Veterinario(2, "Dr. Mateo GÃ³mez", "mateo@vet.com", "medicina_general");
+        var vetUrgencias = new Veterinario(3, "Dra. SofÃ­a Ãvila", "sofia@vet.com", "urgencias");
 
         var peluquero = new Peluquero(4, "Pedro Cortes", "pedro@vet.com");
-        var peluquero2 = new Peluquero(5, "Laura Ríos", "laura@vet.com");
+        var peluquero2 = new Peluquero(5, "Laura RÃ­os", "laura@vet.com");
 
-        var asistente = new Asistente(6, "Lucía Rivera", "lucia@vet.com", "Recepción");
-        var asistente2 = new Asistente(7, "Diego Pérez", "diego@vet.com", "Recepción");
+        var asistente = new Asistente(6, "LucÃ­a Rivera", "lucia@vet.com", "RecepciÃ³n");
+        var asistente2 = new Asistente(7, "Diego PÃ©rez", "diego@vet.com", "RecepciÃ³n");
+
+        AgregarHorarioSemanal(vet, 100);
+        AgregarHorarioSemanal(vetGeneral, 200);
+        AgregarHorarioSemanal(vetUrgencias, 300);
+        AgregarHorarioSemanal(peluquero, 400);
+        AgregarHorarioSemanal(peluquero2, 500);
+        AgregarHorarioSemanal(asistente, 600);
+        AgregarHorarioSemanal(asistente2, 700);
 
         var profesionales = new List<IAgendable> { vet, vetGeneral, vetUrgencias, peluquero, peluquero2, asistente, asistente2 };
 
