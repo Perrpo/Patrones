@@ -5,6 +5,9 @@ using VetClinicConsole.Classes.Personal;
 using VetClinicConsole.Interfaces;
 using VetClinicConsole.Services;
 
+Console.OutputEncoding = System.Text.Encoding.UTF8;
+Console.InputEncoding = System.Text.Encoding.UTF8;
+
 var data = InMemoryData.Load();
 var reporter = new DataReporter(data);
 
@@ -13,13 +16,14 @@ while (true)
 Console.WriteLine("=== Veterinaria - Gestión de Citas ===");
     Console.WriteLine("1) Listar todo");
     Console.WriteLine("2) Listar citas");
-    Console.WriteLine("3) Crear cliente");
-    Console.WriteLine("4) Crear mascota");
-    Console.WriteLine("5) Crear cita");
-    Console.WriteLine("6) Cambiar estado de una cita");
-    Console.WriteLine("7) Listar mascotas");
-    Console.WriteLine("8) Registrar pago");
-    Console.WriteLine("9) Buscar cita");
+    Console.WriteLine("3) Listar agendas");
+    Console.WriteLine("4) Crear cliente");
+    Console.WriteLine("5) Crear mascota");
+    Console.WriteLine("6) Crear cita");
+    Console.WriteLine("7) Cambiar estado de una cita");
+    Console.WriteLine("8) Listar mascotas");
+    Console.WriteLine("9) Registrar pago");
+    Console.WriteLine("10) Buscar cita");
     Console.WriteLine("0) Salir");
     Console.Write("Selecciona opción: ");
 
@@ -37,24 +41,27 @@ Console.WriteLine("=== Veterinaria - Gestión de Citas ===");
                 reporter.PrintCitas();
                 break;
             case "3":
-                CrearCliente();
+                reporter.PrintAgendas();
                 break;
             case "4":
-                CrearMascota();
+                CrearCliente();
                 break;
             case "5":
-                CrearCita();
+                CrearMascota();
                 break;
             case "6":
-                CambiarEstadoCita();
+                CrearCita();
                 break;
             case "7":
-                reporter.PrintMascotas();
+                CambiarEstadoCita();
                 break;
             case "8":
-                RegistrarPago();
+                reporter.PrintMascotas();
                 break;
             case "9":
+                RegistrarPago();
+                break;
+            case "10":
                 BuscarCita();
                 break;
             case "0":
@@ -73,8 +80,12 @@ Console.WriteLine("=== Veterinaria - Gestión de Citas ===");
 void CrearCita()
 {
     Console.WriteLine("=== Crear Cita ===");
-    var mascota = ElegirMascota();
-    if (mascota is null) return;
+    var mascota = BuscarMascotaPorNombre();
+    if (mascota is null)
+    {
+        Console.WriteLine("Mascota no encontrada.\n");
+        return;
+    }
 
     var servicio = ElegirServicio();
     if (servicio is null) return;
@@ -92,7 +103,12 @@ void CrearCita()
         return;
     }
 
-    var slot = ElegirDeLista(disponibilidad, h => $"{h.Fecha:dd/MM/yyyy} {h.HoraInicio:hh\\:mm} - {h.HoraFin:hh\\:mm}");
+    var slot = ElegirDeLista(disponibilidad, h =>
+    {
+        var inicio = h.Fecha + h.HoraInicio;
+        var fin = h.Fecha + h.HoraFin;
+        return $"{inicio:dd/MM/yyyy hh:mm tt} - {fin:hh:mm tt}";
+    });
     if (slot is null) return;
 
     var mensaje = data.Facade.AgendarCita(slot.Fecha + slot.HoraInicio, mascota!, profesional!, new[] { servicio! });
@@ -222,26 +238,18 @@ void RegistrarPago()
 void BuscarCita()
 {
     Console.WriteLine("=== Buscar Cita ===");
-    Console.Write("ID o nombre de mascota: ");
-    var filtro = (Console.ReadLine() ?? "").Trim();
-    if (string.IsNullOrWhiteSpace(filtro))
+    Console.Write("Nombre de mascota: ");
+    var nombre = (Console.ReadLine() ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(nombre))
     {
         Console.WriteLine("Operación cancelada.\n");
         return;
     }
 
-    List<Cita> coincidencias;
-    if (int.TryParse(filtro, out var id))
-    {
-        coincidencias = data.Citas.Where(c => c.Id == id).ToList();
-    }
-    else
-    {
-        var lower = filtro.ToLowerInvariant();
-        coincidencias = data.Citas
-            .Where(c => c.Mascota.Nombre.ToLowerInvariant().Contains(lower))
-            .ToList();
-    }
+    var lower = nombre.ToLowerInvariant();
+    var coincidencias = data.Citas
+        .Where(c => c.Mascota.Nombre.ToLowerInvariant().Contains(lower))
+        .ToList();
 
     if (coincidencias.Count == 0)
     {
@@ -279,17 +287,31 @@ void ImprimirCitaDetallada(Cita c)
     Console.WriteLine($"Cita {c.Id}");
     Console.WriteLine($"Mascota: {c.Mascota.Nombre}");
     Console.WriteLine($"Profesional: {profNombre}");
-    Console.WriteLine($"Fecha: {c.Horario.Fecha:yyyy-MM-dd} {c.Horario.HoraInicio}");
+    var inicio = c.Horario.Fecha + c.Horario.HoraInicio;
+    Console.WriteLine($"Fecha: {inicio:yyyy-MM-dd hh:mm tt}");
     Console.WriteLine($"Servicios: {servicios}");
     Console.WriteLine($"Estado: {c.EstadoNombre}");
     Console.WriteLine($"Total: ${c.Factura.CalcularTotal():N0}");
     Console.WriteLine();
 }
 
-Mascota? ElegirMascota()
+Mascota? BuscarMascotaPorNombre()
 {
-    Console.WriteLine("Elige mascota:");
-    return ElegirDeLista(data.Mascotas, m => $"{m.Id}) {m.Nombre} ({m.Especie}) - Dueño: {m.Cliente.Nombre}");
+    Console.Write("Nombre de la mascota: ");
+    var nombre = (Console.ReadLine() ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(nombre))
+    {
+        Console.WriteLine("Operación cancelada.\n");
+        return null;
+    }
+
+    var lower = nombre.ToLowerInvariant();
+    var coincidencias = data.Mascotas.Where(m => m.Nombre.ToLowerInvariant().Contains(lower)).ToList();
+    if (coincidencias.Count == 0) return null;
+    if (coincidencias.Count == 1) return coincidencias[0];
+
+    Console.WriteLine("Se encontraron varias mascotas, elige una:");
+    return ElegirDeLista(coincidencias, m => $"{m.Nombre} ({m.Especie}) - Dueño: {m.Cliente.Nombre}");
 }
 
 IAgendable? ElegirProfesional(IServicio servicio)
@@ -336,8 +358,9 @@ Cita? ElegirCita()
             Asistente a => a.Nombre,
             _ => "Profesional"
         };
+        var inicio = c.Horario.Fecha + c.Horario.HoraInicio;
         var serviciosTxt = string.Join(", ", c.Factura.Servicios.Select(s => s.Nombre));
-        return $"{c.Id} | {c.Mascota.Nombre} | {prof} | {c.Horario.Fecha:yyyy-MM-dd} {c.Horario.HoraInicio} | {c.EstadoNombre} | {serviciosTxt}";
+        return $"{c.Id} | {c.Mascota.Nombre} | {prof} | {inicio:yyyy-MM-dd hh:mm tt} | {c.EstadoNombre} | {serviciosTxt}";
     });
 }
 

@@ -85,7 +85,37 @@ public class DataReporter
                 Classes.Personal.Asistente a => a.Nombre,
                 _ => c.Profesional.GetType().Name
             };
-            Console.WriteLine($"{c.Id} | {c.Mascota.Nombre} | {profNombre} | {c.Horario.Fecha:d} {c.Horario.HoraInicio} | Estado: {c.EstadoNombre} | Total: ${c.Factura.CalcularTotal():N0}");
+            var inicio = c.Horario.Fecha + c.Horario.HoraInicio;
+            Console.WriteLine($"{c.Id} | {c.Mascota.Nombre} | {profNombre} | {inicio:dd/MM/yyyy hh:mm tt} | Estado: {c.EstadoNombre} | Total: ${c.Factura.CalcularTotal():N0}");
+        }
+        Console.WriteLine();
+    }
+
+    public void PrintAgendas()
+    {
+        Console.WriteLine("=== Agendas por profesional ===");
+        foreach (var p in _data.Profesionales)
+        {
+            var agenda = p.ObtenerAgenda();
+            var label = p switch
+            {
+                Classes.Personal.Veterinario v => $"{v.Nombre} (Esp: {v.Especialidad})",
+                Classes.Personal.Peluquero pe => $"{pe.Nombre} (Peluquería)",
+                _ => p.GetType().Name
+            };
+            var citas = agenda.Citas.OrderBy(c => c.Horario.Fecha).ThenBy(c => c.Horario.HoraInicio).ToList();
+            if (!citas.Any())
+            {
+                Console.WriteLine($"{label}: sin citas");
+                continue;
+            }
+
+            Console.WriteLine($"{label}:");
+            foreach (var c in citas)
+            {
+                var inicio = c.Horario.Fecha + c.Horario.HoraInicio;
+                Console.WriteLine($"  - {inicio:dd/MM/yyyy hh:mm tt} | {c.Mascota.Nombre} | {c.EstadoNombre}");
+            }
         }
         Console.WriteLine();
     }
@@ -95,7 +125,7 @@ public class DataReporter
         Console.WriteLine("=== Pagos ===");
         foreach (var p in _data.Pagos.OrderBy(p => p.Id))
         {
-            Console.WriteLine($"{p.Id} | {p.Metodo.Metodo} | ${p.Monto.ToString("N0", _culture)} | {p.Fecha:g} | Estado: {p.Estado}");
+            Console.WriteLine($"{p.Id} | {p.Metodo.Metodo} | ${p.Monto.ToString("N0", _culture)} | {p.Fecha:dd/MM/yyyy hh:mm tt} | Estado: {p.Estado}");
         }
         Console.WriteLine();
     }

@@ -21,6 +21,5 @@ public class Asistente : Empleado, IAgendable
     public List<HorarioDisponible> VerDisponibilidad(DateTime fecha, TimeSpan duracion) =>
         _agenda.ObtenerDisponibilidad(fecha, duracion);
 
-    public bool PuedeRealizar(IServicio servicio) =>
-        servicio is Consulta or Vacunacion;
+    public bool PuedeRealizar(IServicio servicio) => false;
 }

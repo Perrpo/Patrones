@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VetClinicConsole")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fa4dff5fbb75c6948df151a48e1a82cae680f656")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1657b72feab529732cab339a624f536ac8a2ee07")]
 [assembly: System.Reflection.AssemblyProductAttribute("VetClinicConsole")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VetClinicConsole")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -22,6 +22,5 @@ public class Veterinario : Empleado, IAgendable
         _agenda.ObtenerDisponibilidad(fecha, duracion);
 
     public bool PuedeRealizar(IServicio servicio) =>
-        servicio is Consulta or Vacunacion or CirugiaMenor or Radiografia
-        or AnalisisSangre or LimpiezaDental or Urgencia;
+        servicio is ServicioBase s && s.EspecialidadRequerida == Especialidad;
 }
