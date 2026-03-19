@@ -28,6 +28,13 @@ public class Agenda
     public List<Cita> ObtenerCitas(DateTime fecha) =>
         _citas.Where(c => c.Horario.Fecha.Date == fecha.Date).OrderBy(c => c.Horario.HoraInicio).ToList();
 
+    public bool HayConflicto(DateTime fecha, TimeSpan inicio, TimeSpan duracion)
+    {
+        var fin = inicio + duracion;
+        return ObtenerCitas(fecha).Any(c =>
+            !(fin <= c.Horario.HoraInicio || inicio >= c.Horario.HoraFin));
+    }
+
     public List<HorarioDisponible> ObtenerDisponibilidad(DateTime fecha, TimeSpan duracion)
     {
         var horariosDia = _horariosLaborales

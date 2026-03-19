@@ -62,4 +62,7 @@ public class AgendamientoFacade
 
     public List<Cita> ConsultarAgenda(DateTime fecha) =>
         _citas.Where(c => c.Horario.Fecha.Date == fecha.Date).OrderBy(c => c.Horario.HoraInicio).ToList();
+
+    public List<IAgendable> ObtenerProfesionalesPorServicio(IEnumerable<IAgendable> profesionales, IServicio servicio) =>
+        profesionales.Where(p => p.PuedeRealizar(servicio)).ToList();
 }
