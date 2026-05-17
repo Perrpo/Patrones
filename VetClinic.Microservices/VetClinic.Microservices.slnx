@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/ApiGateway/">
+    <Project Path="src/ApiGateway/VetClinic.ApiGateway/VetClinic.ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/VetClinic.BuildingBlocks/VetClinic.BuildingBlocks.csproj" />
+  </Folder>
+  <Folder Name="/src/ConsoleApp/">
+    <Project Path="src/ConsoleApp/VetClinic.ConsoleApp/VetClinic.ConsoleApp.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/" />
+  <Folder Name="/src/Services/Agendamiento/">
+    <Project Path="src/Services/Agendamiento/VetClinic.Agendamiento/VetClinic.Agendamiento.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Facturacion/">
+    <Project Path="src/Services/Facturacion/VetClinic.Facturacion/VetClinic.Facturacion.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Notificaciones/">
+    <Project Path="src/Services/Notificaciones/VetClinic.Notificaciones/VetClinic.Notificaciones.csproj" />
+  </Folder>
+  <Folder Name="/src/Services/Personal/">
+    <Project Path="src/Services/Personal/VetClinic.Personal/VetClinic.Personal.csproj" />
+  </Folder>
+</Solution>
