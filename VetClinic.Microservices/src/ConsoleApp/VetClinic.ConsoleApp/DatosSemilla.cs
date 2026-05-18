@@ -27,10 +27,10 @@ public static class DatosSemilla
         await mascotaRepo.AddAsync(new Mascota(MascotaLunaId, "Luna", "Gato", "Siames", 2, ClienteJuanId));
         await mascotaRepo.AddAsync(new Mascota(MascotaRockyId, "Rocky", "Perro", "Bulldog", 5, ClienteJuanId));
 
-        // Agenda Dr. Carlos (veterinario) - Lunes a Sabado, 8am-5pm
+        // Agenda Dr. Carlos (veterinario) - Lun a Sab, 8:00-17:00
         var agendaCarlos = new Agenda(Guid.NewGuid(), ProfesionalCarlosId, "Dr. Carlos Rodriguez");
         var hoy = DateTime.Today;
-        for (int i = 0; i < 90; i++)
+        for (int i = 0; i < 365; i++)
         {
             var dia = hoy.AddDays(i);
             if (dia.DayOfWeek == DayOfWeek.Sunday) continue; // No trabaja domingos
@@ -39,9 +39,9 @@ public static class DatosSemilla
         }
         await agendaRepo.AddAsync(agendaCarlos);
 
-        // Agenda Dra. Maria (veterinaria) - Lunes a Sabado, 9am-6pm
+        // Agenda Dra. Maria (veterinaria) - Lun a Sab, 9:00-18:00
         var agendaMaria = new Agenda(Guid.NewGuid(), ProfesionalMariaId, "Dra. Maria Lopez");
-        for (int i = 0; i < 90; i++)
+        for (int i = 0; i < 365; i++)
         {
             var dia = hoy.AddDays(i);
             if (dia.DayOfWeek == DayOfWeek.Sunday) continue;
@@ -51,7 +51,7 @@ public static class DatosSemilla
         await agendaRepo.AddAsync(agendaMaria);
 
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("  Datos cargados: 2 profesionales, 3 mascotas, horarios 90 dias (L-S).");
+        Console.WriteLine("  Datos iniciales cargados: 2 profesionales, 3 mascotas, horarios Lun-Sab (1 anio).");
         Console.ResetColor();
     }
 }
