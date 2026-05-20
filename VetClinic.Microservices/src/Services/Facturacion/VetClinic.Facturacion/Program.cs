@@ -9,7 +9,7 @@ using VetClinic.BuildingBlocks.Application;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<FacturacionDbContext>(o => o.UseInMemoryDatabase("FacturacionDB"));
 builder.Services.AddScoped<IFacturaRepository, FacturaRepository>();
-builder.Services.AddScoped<IEventPublisher, InMemoryEventPublisher>();
+builder.Services.AddScoped<IEventPublisher, VetClinic.Facturacion.Infrastructure.Services.InMemoryEventPublisher>();
 builder.Services.AddScoped<RegistrarPagoUseCase>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

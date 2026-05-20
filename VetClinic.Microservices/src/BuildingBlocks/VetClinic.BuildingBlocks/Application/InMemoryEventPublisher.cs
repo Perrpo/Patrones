@@ -1,3 +1,5 @@
+using VetClinic.BuildingBlocks.Domain;
+
 namespace VetClinic.BuildingBlocks.Application;
 
 /// <summary>
