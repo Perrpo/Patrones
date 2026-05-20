@@ -1,49 +1,40 @@
 namespace VetClinic.Personal.API.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using VetClinic.Personal.Domain.Interfaces;
+using VetClinic.Personal.Application.UseCases;
 
 /// <summary>
-/// Expone endpoints REST para consultar el equipo de profesionales de la clínica.
+/// Controller DELGADO: recibe HTTP, delega a Use Cases, retorna DTOs.
+/// NO accede directamente a repositorios ni contiene lógica de negocio.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ProfesionalesController : ControllerBase
 {
-    private readonly IProfesionalRepository _profesionalRepo;
+    private readonly ObtenerProfesionalesUseCase _obtenerProfesionales;
+    private readonly ObtenerProfesionalPorIdUseCase _obtenerProfesionalPorId;
 
-    public ProfesionalesController(IProfesionalRepository profesionalRepo)
+    public ProfesionalesController(
+        ObtenerProfesionalesUseCase obtenerProfesionales,
+        ObtenerProfesionalPorIdUseCase obtenerProfesionalPorId)
     {
-        _profesionalRepo = profesionalRepo;
+        _obtenerProfesionales = obtenerProfesionales;
+        _obtenerProfesionalPorId = obtenerProfesionalPorId;
     }
 
-    /// <summary>Obtiene todos los profesionales activos.</summary>
+    /// <summary>Obtiene todos los profesionales activos. Retorna DTOs, nunca entidades.</summary>
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var profesionales = await _profesionalRepo.GetAllAsync(ct);
-        var result = profesionales.Select(p => new
-        {
-            p.Id,
-            p.Nombre,
-            p.Rol,
-            Especialidad = p.Especialidad.Nombre
-        });
+        var result = await _obtenerProfesionales.EjecutarAsync(ct);
         return Ok(result);
     }
 
-    /// <summary>Obtiene un profesional por su ID.</summary>
+    /// <summary>Obtiene un profesional por su ID. Retorna 404 si no existe.</summary>
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
-        var profesional = await _profesionalRepo.GetByIdAsync(id, ct);
-        if (profesional == null) return NotFound(new { mensaje = "Profesional no encontrado." });
-        return Ok(new
-        {
-            profesional.Id,
-            profesional.Nombre,
-            profesional.Rol,
-            Especialidad = profesional.Especialidad.Nombre
-        });
+        var result = await _obtenerProfesionalPorId.EjecutarAsync(id, ct);
+        return Ok(result);
     }
 }

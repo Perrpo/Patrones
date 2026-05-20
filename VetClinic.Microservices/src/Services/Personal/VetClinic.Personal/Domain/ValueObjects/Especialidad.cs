@@ -4,13 +4,19 @@ using VetClinic.BuildingBlocks.Domain;
 /// <summary>
 /// Value Object inmutable que representa la especialidad de un profesional.
 /// Valida en constructor. No tiene setters publicos.
+/// La comparación es case-insensitive (usa StringComparer.OrdinalIgnoreCase).
 /// </summary>
 public class Especialidad : ValueObject
 {
-    private static readonly HashSet<string> EspecialidadesValidas = new()
+    private static readonly HashSet<string> EspecialidadesValidas = new(StringComparer.OrdinalIgnoreCase)
     {
-        "medicina_general", "cirugia", "urgencias", "dermatologia",
-        "odontologia", "peluqueria", "nutricion"
+        // Especialidades médico-clínicas
+        "Medicina General", "Cirugía", "Urgencias",
+        "Dermatología", "Odontología", "Nutrición",
+        // Servicios de estética
+        "Peluquería", "Estética Canina", "Estética Felina",
+        // Roles administrativos
+        "Recepción", "Administración"
     };
 
     public string Nombre { get; }
@@ -19,13 +25,14 @@ public class Especialidad : ValueObject
     {
         if (string.IsNullOrWhiteSpace(nombre))
             throw new DomainException("La especialidad es obligatoria.");
-        if (!EspecialidadesValidas.Contains(nombre.ToLower()))
-            throw new DomainException($"Especialidad invalida: {nombre}. Validas: {string.Join(", ", EspecialidadesValidas)}");
-        Nombre = nombre.ToLower();
+        if (!EspecialidadesValidas.Contains(nombre))
+            throw new DomainException($"Especialidad invalida: '{nombre}'. " +
+                $"Validas: {string.Join(", ", EspecialidadesValidas)}");
+        Nombre = nombre;
     }
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
-        yield return Nombre;
+        yield return Nombre.ToLowerInvariant();
     }
 }
