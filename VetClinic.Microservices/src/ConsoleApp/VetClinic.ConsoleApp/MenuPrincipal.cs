@@ -197,12 +197,16 @@ public class MenuPrincipal
         var (profesionalId, agenda) = await ElegirProfesional();
         if (agenda == null) return;
 
-        // 3. Pedir fecha: dia, mes, anio
+        // 3. Elegir servicio
+        var servicioElegido = ElegirServicio();
+        if (servicioElegido == null) return;
+
+        // 4. Pedir fecha: dia, mes, anio
         var fecha = LeerFecha();
         if (fecha == null) return;
 
-        // 4. Mostrar disponibilidad y elegir horario
-        var duracion = new DuracionServicio(30);
+        // 5. Mostrar disponibilidad y elegir horario
+        var duracion = new DuracionServicio(servicioElegido.Value.duracionMinutos);
         var slots = _servicioDisponibilidad.CalcularDisponibilidad(agenda, fecha.Value, duracion);
 
         if (slots.Count == 0)
@@ -227,22 +231,23 @@ public class MenuPrincipal
 
         var slotElegido = slots[slotIdx - 1];
 
-        // 5. Agendar via Use Case (pasa por Aggregate Root)
+        // 6. Agendar via Use Case (pasa por Aggregate Root)
         var request = new CrearCitaRequest(
             profesionalId, mascota.Id, fecha.Value, slotElegido.HoraInicio, slotElegido.HoraFin);
         var resultado = await _agendarCita.EjecutarAsync(request);
 
-        // 6. Crear factura automatica (evento CitaCreadaEvent -> BC Facturacion)
-        var factura = new Factura(Guid.NewGuid(), resultado.Id, 50000);
+        // 7. Crear factura automatica (evento CitaCreadaEvent -> BC Facturacion)
+        var factura = new Factura(Guid.NewGuid(), resultado.Id, servicioElegido.Value.precio);
         await _facturaRepo.AddAsync(factura);
         factura.ClearDomainEvents();
 
         MostrarExito($"Cita creada exitosamente!");
         Console.WriteLine($"    Mascota: {mascota.Nombre}");
         Console.WriteLine($"    Profesional: {agenda.NombreProfesional}");
+        Console.WriteLine($"    Servicio: {servicioElegido.Value.nombre}");
         Console.WriteLine($"    Fecha: {resultado.Fecha:dd/MM/yyyy} {resultado.HoraInicio}-{resultado.HoraFin}");
         Console.WriteLine($"    Estado: {resultado.Estado}");
-        Console.WriteLine($"    Factura: ${50000:N0}");
+        Console.WriteLine($"    Factura: ${servicioElegido.Value.precio:N0}");
     }
 
     // ==================== 6) CAMBIAR ESTADO DE CITA ====================
@@ -499,6 +504,31 @@ public class MenuPrincipal
         { MostrarError("Seleccion invalida."); return (null, null); }
 
         return (listado[idx - 1].cita, listado[idx - 1].agenda);
+    }
+
+    private (string nombre, int duracionMinutos, decimal precio)? ElegirServicio()
+    {
+        Console.WriteLine("\n  Servicios disponibles:");
+        var servicios = new[]
+        {
+            (nombre: "Consulta Veterinaria", duracionMinutos: 30, precio: 50000m),
+            (nombre: "Vacunacion", duracionMinutos: 15, precio: 30000m),
+            (nombre: "Corte de Pelo y Banio", duracionMinutos: 60, precio: 40000m),
+            (nombre: "Cirugia Menor", duracionMinutos: 120, precio: 250000m)
+        };
+
+        for (int i = 0; i < servicios.Length; i++)
+        {
+            var s = servicios[i];
+            Console.WriteLine($"  {i + 1}) {s.nombre} ({s.duracionMinutos} min) - ${s.precio:N0}");
+        }
+
+        Console.Write("  Seleccione (numero): ");
+        var input = Console.ReadLine()?.Trim();
+        if (!int.TryParse(input, out var idx) || idx < 1 || idx > servicios.Length)
+        { MostrarError("Seleccion invalida."); return null; }
+
+        return servicios[idx - 1];
     }
 
     private void MostrarEncabezado()
