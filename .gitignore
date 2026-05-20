@@ -480,3 +480,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Documentos y scripts a ignorar (Microservicios + DDD + Clean Architecture Only)
+*.d
+*.py
+*.pdf
+*.docx
